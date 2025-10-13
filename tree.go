@@ -1,5 +1,9 @@
 package rbtree
 
+import (
+	"iter"
+)
+
 // New creates new empty red-black tree.
 func New[T TreeKey[T]]() *Tree[T] {
 	return &Tree[T]{}
@@ -8,16 +12,25 @@ func New[T TreeKey[T]]() *Tree[T] {
 // Tree definition of red-black tree.
 //
 // TODO arena for element allocation is definitely a viable
-//      idea.
+//
+//	idea.
 type Tree[T TreeKey[T]] struct {
 	root *node[T]
 	size int
 }
 
 // Iter returns reb-black tree iterator.
-func (t *Tree[T]) Iter() *Iterator[T] {
-	return &Iterator[T]{
-		r: t.root,
+func (t *Tree[T]) Iter() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		it := &Iterator[T]{
+			r: t.root,
+		}
+
+		for it.Next() {
+			if !yield(it.Item()) {
+				return
+			}
+		}
 	}
 }
 

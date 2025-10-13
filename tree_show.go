@@ -5,12 +5,14 @@ import (
 	"fmt"
 )
 
-// show show tree in a dot format.
+// show shows the tree in a dot format.
 func (t *Tree[T]) show() []byte {
 	var buf bytes.Buffer
 
 	buf.WriteString("graph rbtree {\n")
-	it := t.Iter()
+	it := &Iterator[T]{
+		r: t.root,
+	}
 	for it.Next() {
 		color := "black"
 		if it.n.isRed() {
@@ -20,7 +22,9 @@ func (t *Tree[T]) show() []byte {
 		_, _ = fmt.Fprintf(&buf, " %v [color=%s];\n", it.Item(), color)
 	}
 
-	it = t.Iter()
+	it = &Iterator[T]{
+		r: t.root,
+	}
 	for it.Next() {
 		n := it.n
 		if n.parent != nil {

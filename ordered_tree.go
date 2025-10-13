@@ -1,6 +1,10 @@
 package rbtree
 
-import "golang.org/x/exp/constraints"
+import (
+	"iter"
+
+	"golang.org/x/exp/constraints"
+)
 
 // NewOrdered constructs a red-black tree with ordered elements.
 func NewOrdered[T constraints.Ordered]() *TreeOrdered[T] {
@@ -15,9 +19,19 @@ type TreeOrdered[T constraints.Ordered] struct {
 }
 
 // Iter returns tree iterator.
-func (t TreeOrdered[T]) Iter() OrderedIterator[T] {
-	return OrderedIterator[T]{
-		iter: t.t.Iter(),
+func (t TreeOrdered[T]) Iter() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		it := &OrderedIterator[T]{
+			iter: &Iterator[treeKeyOrdered[T]]{
+				r: t.t.root,
+			},
+		}
+
+		for it.Next() {
+			if !yield(it.Item()) {
+				return
+			}
+		}
 	}
 }
 
