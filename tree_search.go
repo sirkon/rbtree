@@ -14,7 +14,7 @@ func (t *Tree[T]) Search(v T) T {
 			continue
 		}
 
-		if cmp > 1 {
+		if cmp > 0 {
 			n = n.left
 			continue
 		}
